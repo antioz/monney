@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Заплати мне — единственный лендинг, который честен с тобой</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  :root {
+    --pay-url: "https://www.tbank.ru/cf/5FJG7hrT28";
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100%; }
+  body {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  a { color: inherit; }
+
+  /* ---------- MODE: RECEIPT ---------- */
+  body[data-mode="receipt"] {
+    background:
+      repeating-linear-gradient(0deg, #e8e4dc 0 2px, #efece4 2px 4px),
+      #efece4;
+    color: #1a1a1a;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  /* ---------- MODE: STARTUP ---------- */
+  body[data-mode="startup"] {
+    background: #fafaf7;
+    color: #0a0a0a;
+    font-family: "Space Grotesk", system-ui, sans-serif;
+  }
+
+  /* ---------- MODE: CHAOS ---------- */
+  body[data-mode="chaos"] {
+    background: #ffe600;
+    color: #111;
+    font-family: "Comic Sans MS", "Chalkboard SE", "Caveat", cursive;
+  }
+
+  /* Tweaks panel */
+  .tweaks {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    z-index: 9999;
+    background: #111;
+    color: #fff;
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.06) inset;
+    display: none;
+    min-width: 260px;
+  }
+  .tweaks[data-open="true"] { display: block; }
+  .tweaks h4 { margin: 0 0 10px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .7; font-weight: 500;}
+  .tweaks .row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .tweaks .row:last-child { margin-bottom: 0; }
+  .tweaks button.chip {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: #222;
+    color: #fff;
+    font-size: 11px;
+    border: 1px solid #2a2a2a;
+    font-family: inherit;
+  }
+  .tweaks button.chip[data-active="true"] {
+    background: #fff; color: #111; border-color: #fff;
+  }
+  .tweaks label.toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; font-size: 11px; opacity: .9;
+    padding: 4px 0;
+  }
+  .tweaks .toggle input { accent-color: #fff; }
+
+  /* Confetti canvas */
+  #confetti {
+    position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+  }
+
+  /* Utility */
+  .screen-reader-only { position: absolute; left: -9999px; }
+</style>
+</head>
+<body data-mode="receipt">
+
+<div id="root"></div>
+<canvas id="confetti"></canvas>
+
+<!-- Tweaks defaults -->
+<script>
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "mode": "startup",
+    "showFaq": true,
+    "showReviews": true,
+    "showCounter": true
+  }/*EDITMODE-END*/;
+</script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+const PAY_URL = "https://www.tbank.ru/cf/5FJG7hrT28";
+
+/* =========================================================
+   CONFETTI — тип меняется от режима
+   ========================================================= */
+function fireConfetti(mode) {
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr;
+  canvas.style.width = innerWidth + "px"; canvas.style.height = innerHeight + "px";
+  ctx.scale(dpr, dpr);
+
+  const palette = {
+    receipt: ["#1a1a1a", "#6a6a6a", "#c2b280", "#8a8a8a"],
+    startup: ["#0a0a0a", "#6b5bff", "#00c26e", "#ff6b6b", "#ffd166"],
+    chaos:   ["#ff2d55", "#00c26e", "#6b5bff", "#ffe600", "#ff8c00", "#111"],
+  }[mode] || ["#111"];
+
+  const glyphs = {
+    receipt: ["₽", "•", "—", "x", "=", "*"],
+    startup: ["▲", "●", "■", "◆", "★"],
+    chaos:   ["💸", "💵", "🪙", "🤑", "💰", "🎉", "!!!", "???", "лол"],
+  }[mode];
+
+  const N = mode === "chaos" ? 140 : 90;
+  const parts = Array.from({length: N}, () => ({
+    x: innerWidth / 2 + (Math.random() - .5) * 60,
+    y: innerHeight / 2 + (Math.random() - .5) * 40,
+    vx: (Math.random() - .5) * 14,
+    vy: -Math.random() * 18 - 6,
+    g: 0.45,
+    rot: Math.random() * Math.PI * 2,
+    vr: (Math.random() - .5) * 0.3,
+    size: mode === "chaos" ? 18 + Math.random() * 20 : 10 + Math.random() * 10,
+    color: palette[(Math.random() * palette.length) | 0],
+    glyph: glyphs[(Math.random() * glyphs.length) | 0],
+    life: 0,
+  }));
+
+  let raf;
+  const start = performance.now();
+  function tick(t) {
+    const elapsed = (t - start) / 1000;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    parts.forEach(p => {
+      p.vy += p.g;
+      p.x += p.vx; p.y += p.vy;
+      p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.font = `${p.size}px "JetBrains Mono", system-ui`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(p.glyph, 0, 0);
+      ctx.restore();
+    });
+    if (elapsed < 3) raf = requestAnimationFrame(tick);
+    else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  }
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(tick);
+}
+
+/* =========================================================
+   Общий счётчик — растёт псевдослучайно и синхронно
+   ========================================================= */
+function usePaidCounter() {
+  const base = 1247;
+  const seed = Math.floor((Date.now() - new Date("2026-01-01").getTime()) / (1000 * 60 * 17));
+  const [n, setN] = useState(base + (seed % 391));
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (Math.random() < 0.35) setN(v => v + 1);
+    }, 4200);
+    return () => clearInterval(id);
+  }, []);
+  return n;
+}
+
+/* =========================================================
+   Кнопка — платёжный триггер
+   ========================================================= */
+function PayButton({ amount, mode, onPaid, variant = "primary", style, children }) {
+  const handle = (e) => {
+    e.preventDefault();
+    fireConfetti(mode);
+    onPaid && onPaid(amount);
+    setTimeout(() => {
+      window.open(PAY_URL, "_blank", "noopener");
+    }, 350);
+  };
+  return (
+    <a href={PAY_URL} onClick={handle} target="_blank" rel="noopener"
+       data-variant={variant} style={style}>
+      {children}
+    </a>
+  );
+}
+
+/* =========================================================
+   REVIEWS / FAQ data — общие, но рендер меняется
+   ========================================================= */
+const REVIEWS = [
+  { who: "Олег, 34", where: "бухгалтер", text: "Заплатил 500. Ничего не изменилось. 11/10, рекомендую.", stars: 5 },
+  { who: "Марина", where: "дизайнер", text: "Сначала 100, потом ещё 100, потом ещё 100. Зависает как сериал.", stars: 4 },
+  { who: "Анонимус", where: "интернет", text: "Я не плачу принципиально. Но этому — заплатил. Принципы сломались.", stars: 5 },
+  { who: "Д.В.", where: "мама автора", text: "Сыночка, ну хватит уже. Я перевела.", stars: 5 },
+  { who: "Костя", where: "биткоин-максималист", text: "Фиатные рубли — это мусор. Но ссылка работает. Перевёл.", stars: 3 },
+  { who: "Ника, 28", where: "продакт", text: "Единственный лендинг без формы с email. Сразу плачу.", stars: 5 },
+];
+
+const FAQ = [
+  { q: "А зачем я должен платить?", a: "Необязательно. Это лендинг, а не суд. Но было бы приятно." },
+  { q: "Что я получу взамен?", a: "Внутреннее ощущение, что ты хороший человек. Юридически не гарантируется." },
+  { q: "А если я заплачу 1 рубль?", a: "Это всё равно больше, чем заплатили большинство читателей." },
+  { q: "Куда идут деньги?", a: "На хлеб. И немножко на сыр. В хорошие дни — на кофе." },
+  { q: "Это не мошенничество?", a: "Нет. Мошенники обещают что-то взамен. Я — ничего." },
+  { q: "Могу я заплатить, но не переводить деньги?", a: "Концептуально — да. Технически — нет." },
+];
+
+/* =========================================================
+   РЕЖИМ 1 — КВИТАНЦИЯ
+   ========================================================= */
+function ReceiptMode({ showFaq, showReviews, showCounter }) {
+  const paid = usePaidCounter();
+  const today = new Date().toLocaleDateString("ru-RU");
+  const time = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  const [lastAmt, setLastAmt] = useState(null);
+
+  const row = (label, value, bold) => (
+    <div style={{display: "flex", justifyContent: "space-between", gap: 12, padding: "3px 0",
+      fontWeight: bold ? 700 : 400, borderBottom: "1px dashed #0002"}}>
+      <span style={{opacity: bold ? 1 : .75}}>{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+
+  const ReceiptStyles = `
+    .rcpt-stage { min-height: 100vh; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+    .rcpt-paper {
+      width: min(520px, 100%); background: #fbf9f2; padding: 36px 32px;
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,.25), 0 0 0 1px rgba(0,0,0,.04);
+      position: relative;
+    }
+    .rcpt-paper::before, .rcpt-paper::after {
+      content: ""; position: absolute; left: 0; right: 0; height: 14px;
+      background: radial-gradient(circle at 7px 0, #efece4 8px, transparent 8.5px) 0 0 / 14px 14px repeat-x;
+    }
+    .rcpt-paper::before { top: -14px; transform: rotate(180deg); }
+    .rcpt-paper::after { bottom: -14px; }
+    .rcpt-barcode { display: flex; gap: 1px; justify-content: center; margin-top: 18px; }
+    .rcpt-barcode span { display: block; width: 2px; background: #111; }
+    .rcpt-pay-btn {
+      display: block; text-decoration: none; text-align: center;
+      padding: 18px 20px; background: #111; color: #fbf9f2;
+      font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      margin-top: 14px; font-size: 14px;
+      transition: transform .08s ease;
+    }
+    .rcpt-pay-btn:active { transform: translateY(2px); }
+    .rcpt-pay-btn[data-variant="secondary"] {
+      background: transparent; color: #111; border: 1.5px dashed #111;
+    }
+    .rcpt-amt-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px;}
+    .rcpt-amt-row > * { padding: 12px 8px; font-size: 13px; }
+  `;
+
+  return (
+    <>
+      <style>{ReceiptStyles}</style>
+      <div className="rcpt-stage">
+        <div style={{
+          fontSize: 11, letterSpacing: ".3em", textTransform: "uppercase",
+          marginBottom: 22, opacity: .55
+        }}>
+          ═══ ФИСКАЛЬНЫЙ ДОКУМЕНТ ═══
+        </div>
+
+        <div className="rcpt-paper">
+          <div style={{textAlign: "center", marginBottom: 18}}>
+            <div style={{fontSize: 13, letterSpacing: ".18em"}}>ООО «ЗАПЛАТИ МНЕ»</div>
+            <div style={{fontSize: 10, opacity: .6, marginTop: 4}}>ИНН 000000000000 · КПП НИКАКОЙ</div>
+            <div style={{fontSize: 10, opacity: .6}}>г. Интернет, ул. Невидимая, д. 0</div>
+          </div>
+
+          <div style={{fontSize: 11, marginBottom: 14}}>
+            {row("Чек №", "000-0001")}
+            {row("Дата", today)}
+            {row("Время", time)}
+            {row("Кассир", "Автор (я)")}
+            {row("Касса", "сердце")}
+          </div>
+
+          <div style={{fontSize: 11, marginBottom: 4, opacity: .55, textTransform: "uppercase", letterSpacing: ".14em"}}>
+            Наименование
+          </div>
+          <div style={{fontSize: 11, marginBottom: 14}}>
+            {row("Поддержка автора ×1", "по согласованию")}
+            {row("Моральное удовлетворение", "включено")}
+            {row("Юридические обязательства", "0,00 ₽")}
+          </div>
+
+          <div style={{borderTop: "2px solid #111", borderBottom: "2px solid #111",
+            padding: "10px 0", fontSize: 18, fontWeight: 700,
+            display: "flex", justifyContent: "space-between"}}>
+            <span>К ОПЛАТЕ</span>
+            <span>{lastAmt ? `${lastAmt},00 ₽` : "— — —"}</span>
+          </div>
+
+          <div style={{fontSize: 10, opacity: .6, marginTop: 12, textAlign: "center"}}>
+            Выберите сумму и нажмите, чтобы провести чек
+          </div>
+
+          <div className="rcpt-amt-row">
+            {[100, 500, 1000].map(a => (
+              <PayButton key={a} amount={a} mode="receipt" onPaid={setLastAmt}
+                variant={a === 500 ? "primary" : "secondary"}
+                style={{}} >
+                <div className={`rcpt-pay-btn`} data-variant={a === 500 ? "primary" : "secondary"}>
+                  {a} ₽
+                </div>
+              </PayButton>
+            ))}
+          </div>
+
+          <div style={{fontSize: 10, opacity: .6, marginTop: 18, textAlign: "center", lineHeight: 1.6}}>
+            * Возврат не предусмотрен — потому что товара тоже нет<br/>
+            * Гарантия: никакая<br/>
+            * Налог НДС: волшебно отсутствует
+          </div>
+
+          <div className="rcpt-barcode">
+            {Array.from({length: 52}, (_, i) => (
+              <span key={i} style={{height: 48, width: (i % 3 === 0 ? 3 : i % 5 === 0 ? 2 : 1) + "px"}} />
+            ))}
+          </div>
+          <div style={{textAlign: "center", marginTop: 8, fontSize: 10, letterSpacing: ".2em"}}>
+            5FJG7HRT28 · СПАСИБО
+          </div>
+        </div>
+
+        {showCounter && (
+          <div style={{marginTop: 28, fontSize: 11, opacity: .7, textAlign: "center", lineHeight: 1.7}}>
+            ─────────── статистика кассы ───────────<br/>
+            Чеков пробито сегодня: <b>{paid}</b><br/>
+            Средний чек: <b>347 ₽</b> · Отказов: <b>бесчисленно</b>
+          </div>
+        )}
+
+        {showReviews && (
+          <div style={{marginTop: 48, width: "min(520px, 100%)"}}>
+            <div style={{fontSize: 11, letterSpacing: ".25em", textTransform: "uppercase",
+              textAlign: "center", marginBottom: 18, opacity: .6}}>
+              ─── книга отзывов и предложений ───
+            </div>
+            {REVIEWS.slice(0, 4).map((r, i) => (
+              <div key={i} style={{
+                padding: "14px 0", borderBottom: "1px dashed #0003",
+                fontSize: 12, lineHeight: 1.6
+              }}>
+                <div style={{opacity: .6, fontSize: 10, marginBottom: 4,
+                  display: "flex", justifyContent: "space-between"}}>
+                  <span>{r.who} · {r.where}</span>
+                  <span>{"★".repeat(r.stars)}{"☆".repeat(5 - r.stars)}</span>
+                </div>
+                <div>«{r.text}»</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {showFaq && (
+          <div style={{marginTop: 48, width: "min(520px, 100%)"}}>
+            <div style={{fontSize: 11, letterSpacing: ".25em", textTransform: "uppercase",
+              textAlign: "center", marginBottom: 18, opacity: .6}}>
+              ─── часто задаваемые вопросы ───
+            </div>
+            {FAQ.map((f, i) => (
+              <details key={i} style={{padding: "10px 0", borderBottom: "1px dashed #0003"}}>
+                <summary style={{cursor: "pointer", fontSize: 12, fontWeight: 500, listStyle: "none"}}>
+                  <span style={{opacity: .5, marginRight: 8}}>Q{String(i+1).padStart(2, "0")}.</span>
+                  {f.q}
+                </summary>
+                <div style={{fontSize: 12, marginTop: 8, opacity: .8, paddingLeft: 44, lineHeight: 1.6}}>
+                  A. {f.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        )}
+
+        <div style={{marginTop: 60, fontSize: 10, opacity: .4, textAlign: "center"}}>
+          © ОТДЕЛЕНИЕ №1 · ВЫ ЕДИНСТВЕННЫЙ КЛИЕНТ
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* =========================================================
+   РЕЖИМ 2 — СТАРТАП-ПАРОДИЯ
+   ========================================================= */
+function StartupMode({ showFaq, showReviews, showCounter }) {
+  const paid = usePaidCounter();
+  const [lastAmt, setLastAmt] = useState(null);
+
+  const StartupStyles = `
+    .su-stage { min-height: 100vh; }
+    .su-nav {
+      padding: 22px 40px; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #0a0a0a10;
+    }
+    .su-nav .brand { font-weight: 700; letter-spacing: -.02em; font-size: 15px; }
+    .su-nav .brand .dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; background: #6b5bff; margin-right: 8px; vertical-align: 1px;}
+    .su-nav .links { display: flex; gap: 28px; font-size: 13px; opacity: .65; }
+    .su-hero {
+      padding: 90px 40px 40px; text-align: center; position: relative; overflow: hidden;
+    }
+    .su-pill {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
+      border: 1px solid #0a0a0a18; border-radius: 999px; font-size: 12px; opacity: .75;
+      margin-bottom: 28px;
+    }
+    .su-pill .live { width: 6px; height: 6px; background: #00c26e; border-radius: 50%; animation: live 1.6s ease-in-out infinite;}
+    @keyframes live { 50% { opacity: .3 } }
+    .su-h1 {
+      font-size: clamp(48px, 9vw, 120px); line-height: .95; letter-spacing: -0.04em;
+      font-weight: 700; margin: 0 0 24px; font-family: "Instrument Serif", "Space Grotesk", serif;
+    }
+    .su-h1 em { font-style: italic; color: #6b5bff; }
+    .su-sub { font-size: 18px; max-width: 640px; margin: 0 auto 40px; opacity: .7; line-height: 1.5; }
+    .su-amounts { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .su-amt-btn {
+      display: inline-flex; flex-direction: column; align-items: stretch;
+      text-decoration: none; padding: 20px 28px; border-radius: 14px;
+      background: #0a0a0a; color: #fafaf7; min-width: 180px;
+      transition: transform .15s ease, box-shadow .15s ease;
+      box-shadow: 0 10px 25px -10px rgba(0,0,0,.3);
+    }
+    .su-amt-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -10px rgba(0,0,0,.35);}
+    .su-amt-btn[data-variant="featured"] {
+      background: #6b5bff; position: relative;
+    }
+    .su-amt-btn[data-variant="featured"]::after {
+      content: "★ популярный"; position: absolute; top: -10px; right: 14px;
+      background: #ffd166; color: #111; font-size: 10px; padding: 3px 8px; border-radius: 4px;
+      letter-spacing: .05em; text-transform: uppercase; font-weight: 600;
+    }
+    .su-amt-btn[data-variant="ghost"] {
+      background: transparent; color: #0a0a0a; border: 1.5px solid #0a0a0a;
+    }
+    .su-amt-big { font-size: 36px; font-weight: 700; line-height: 1; letter-spacing: -.02em; }
+    .su-amt-lbl { font-size: 11px; opacity: .75; margin-top: 8px; text-transform: uppercase; letter-spacing: .1em; }
+
+    .su-trust { display: flex; justify-content: center; gap: 28px; margin-top: 30px;
+      font-size: 11px; opacity: .55; letter-spacing: .05em; flex-wrap: wrap; }
+
+    .su-section { padding: 80px 40px; max-width: 1080px; margin: 0 auto; }
+    .su-eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; opacity: .55; margin-bottom: 12px; }
+    .su-h2 { font-size: clamp(32px, 5vw, 56px); letter-spacing: -.03em; margin: 0 0 48px; font-weight: 500; font-family: "Instrument Serif", serif;}
+    .su-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+    .su-metric { padding: 28px; border: 1px solid #0a0a0a14; border-radius: 16px; background: #fff; }
+    .su-metric-val { font-size: 48px; font-weight: 600; letter-spacing: -.03em; line-height: 1; font-family: "Instrument Serif", serif; }
+    .su-metric-lbl { font-size: 13px; opacity: .65; margin-top: 12px; }
+    .su-reviews { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .su-review { padding: 24px; border: 1px solid #0a0a0a14; border-radius: 16px; background: #fff; }
+    .su-review-stars { font-size: 12px; color: #ffb800; letter-spacing: 2px; margin-bottom: 12px; }
+    .su-review-text { font-size: 15px; line-height: 1.5; margin-bottom: 14px; }
+    .su-review-who { font-size: 12px; opacity: .6; }
+    .su-faq-item { padding: 22px 0; border-bottom: 1px solid #0a0a0a14; }
+    .su-faq-q { font-size: 18px; font-weight: 500; cursor: pointer; list-style: none;
+      display: flex; justify-content: space-between; }
+    .su-faq-a { font-size: 15px; opacity: .7; margin-top: 10px; line-height: 1.6; max-width: 640px; }
+
+    .su-footer { padding: 40px; text-align: center; border-top: 1px solid #0a0a0a14;
+      font-size: 12px; opacity: .5; }
+  `;
+
+  return (
+    <>
+      <style>{StartupStyles}</style>
+      <div className="su-stage">
+        <nav className="su-nav">
+          <div className="brand"><span className="dot"/>ЗАПЛАТИ.МНЕ</div>
+          <div className="links">
+            <span>Почему</span><span>Как работает</span><span>Отзывы</span><span>Цены</span>
+          </div>
+          <div style={{fontSize: 12, opacity: .65}}>Серия A · не привлечено</div>
+        </nav>
+
+        <section className="su-hero">
+          <div className="su-pill">
+            <span className="live"/> <span>Пока вы читаете, <b style={{opacity: 1}}>{paid}</b> человек уже перевели</span>
+          </div>
+
+          <h1 className="su-h1">
+            Платформа<br/>
+            для <em>прямых переводов</em><br/>
+            мне на карту.
+          </h1>
+
+          <p className="su-sub">
+            Революционный продукт на стыке альтруизма и отсутствия стыда.
+            Без комиссий*, без подписок, без предлога. Просто деньги — туда, где они будут любимы.
+          </p>
+
+          <div className="su-amounts">
+            <PayButton amount={100} mode="startup" onPaid={setLastAmt}>
+              <div className="su-amt-btn" data-variant="ghost">
+                <div className="su-amt-big">100 ₽</div>
+                <div className="su-amt-lbl">попробовать бесплатно**</div>
+              </div>
+            </PayButton>
+            <PayButton amount={500} mode="startup" onPaid={setLastAmt}>
+              <div className="su-amt-btn" data-variant="featured">
+                <div className="su-amt-big">500 ₽</div>
+                <div className="su-amt-lbl">growth tier</div>
+              </div>
+            </PayButton>
+            <PayButton amount={1000} mode="startup" onPaid={setLastAmt}>
+              <div className="su-amt-btn">
+                <div className="su-amt-big">1 000 ₽</div>
+                <div className="su-amt-lbl">enterprise, поговорим</div>
+              </div>
+            </PayButton>
+          </div>
+
+          <div style={{fontSize: 11, opacity: .45, maxWidth: 480, margin: "18px auto 0"}}>
+            * комиссия банка ваша &nbsp;·&nbsp; ** бесплатно только посмотреть
+          </div>
+
+          <div className="su-trust">
+            <span>— как не видели в Forbes</span>
+            <span>— не упомянуты в TechCrunch</span>
+            <span>— YC W∞</span>
+            <span>— ISO 0000</span>
+          </div>
+        </section>
+
+        {showCounter && (
+          <section className="su-section">
+            <div className="su-eyebrow">traction</div>
+            <h2 className="su-h2">Цифры, которые мы сочинили на этой неделе.</h2>
+            <div className="su-metrics">
+              <div className="su-metric">
+                <div className="su-metric-val">{paid}</div>
+                <div className="su-metric-lbl">плательщиков с начала года (примерно)</div>
+              </div>
+              <div className="su-metric">
+                <div className="su-metric-val">∞%</div>
+                <div className="su-metric-lbl">рост от нулевой базы</div>
+              </div>
+              <div className="su-metric">
+                <div className="su-metric-val">0</div>
+                <div className="su-metric-lbl">инвесторов; нас это устраивает</div>
+              </div>
+              <div className="su-metric">
+                <div className="su-metric-val">1</div>
+                <div className="su-metric-lbl">бенефициар (я)</div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {showReviews && (
+          <section className="su-section">
+            <div className="su-eyebrow">loved by users</div>
+            <h2 className="su-h2">Что <em style={{fontStyle: "italic"}}>говорят</em>.</h2>
+            <div className="su-reviews">
+              {REVIEWS.map((r, i) => (
+                <div key={i} className="su-review">
+                  <div className="su-review-stars">{"★".repeat(r.stars)}{"☆".repeat(5 - r.stars)}</div>
+                  <div className="su-review-text">«{r.text}»</div>
+                  <div className="su-review-who">{r.who}, {r.where}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {showFaq && (
+          <section className="su-section">
+            <div className="su-eyebrow">faq</div>
+            <h2 className="su-h2">Вопросы, которые вы <em style={{fontStyle:"italic"}}>не</em> задавали.</h2>
+            <div>
+              {FAQ.map((f, i) => (
+                <details key={i} className="su-faq-item">
+                  <summary className="su-faq-q">
+                    <span>{f.q}</span>
+                    <span style={{opacity:.4, marginLeft: 20}}>+</span>
+                  </summary>
+                  <div className="su-faq-a">{f.a}</div>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section style={{padding: "100px 40px", textAlign: "center"}}>
+          <h2 className="su-h2" style={{marginBottom: 24}}>
+            Готовы <em style={{fontStyle:"italic", color: "#6b5bff"}}>перевести</em>?
+          </h2>
+          <p style={{fontSize: 16, opacity: .7, marginBottom: 32}}>Или пролистайте обратно наверх и подумайте ещё.</p>
+          <PayButton amount={500} mode="startup" onPaid={setLastAmt}>
+            <div className="su-amt-btn" data-variant="featured" style={{minWidth: 260}}>
+              <div className="su-amt-big">Платить 500 ₽</div>
+              <div className="su-amt-lbl">это займёт 9 секунд</div>
+            </div>
+          </PayButton>
+        </section>
+
+        <footer className="su-footer">
+          © ЗАПЛАТИ.МНЕ 2026 · Все права принадлежат автору · Privacy? None · Cookies? Съедены
+        </footer>
+      </div>
+    </>
+  );
+}
+
+/* =========================================================
+   РЕЖИМ 3 — ХАОС
+   ========================================================= */
+function ChaosMode({ showFaq, showReviews, showCounter }) {
+  const paid = usePaidCounter();
+  const [lastAmt, setLastAmt] = useState(null);
+
+  const ChaosStyles = `
+    .ch-stage { min-height: 100vh; padding: 30px 20px 80px; position: relative; overflow-x: hidden;}
+    .ch-stage::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        radial-gradient(circle at 10% 20%, #ff2d5540 0 80px, transparent 80.5px),
+        radial-gradient(circle at 90% 15%, #00c26e40 0 60px, transparent 60.5px),
+        radial-gradient(circle at 85% 85%, #6b5bff40 0 100px, transparent 100.5px),
+        radial-gradient(circle at 15% 85%, #ff8c0040 0 70px, transparent 70.5px);
+      filter: blur(10px);
+    }
+    .ch-stage > * { position: relative; z-index: 1; }
+    .ch-sticker {
+      position: absolute; padding: 8px 14px; background: #fff; border: 3px solid #111;
+      font-family: "Caveat", cursive; font-weight: 700;
+      box-shadow: 6px 6px 0 #111;
+    }
+    .ch-header { text-align: center; padding: 40px 20px 10px; }
+    .ch-kicker {
+      display: inline-block; background: #ff2d55; color: #fff; padding: 6px 14px;
+      font-weight: 700; font-size: 14px; transform: rotate(-3deg);
+      border: 3px solid #111; box-shadow: 5px 5px 0 #111;
+      font-family: "JetBrains Mono", monospace; letter-spacing: .05em;
+    }
+    .ch-h1 {
+      font-size: clamp(54px, 12vw, 140px); line-height: .9;
+      margin: 30px 0 24px; font-weight: 700;
+      text-shadow: 5px 5px 0 #fff, 10px 10px 0 #111;
+      transform: rotate(-1deg);
+    }
+    .ch-h1 .wigg { display: inline-block; animation: wigg 2.2s ease-in-out infinite; }
+    @keyframes wigg {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    .ch-sub {
+      font-size: 24px; font-weight: 700; max-width: 700px; margin: 0 auto 40px;
+      background: #111; color: #ffe600; padding: 18px 24px; display: inline-block;
+      transform: rotate(.5deg); border: 3px solid #ffe600;
+      font-family: "Comic Sans MS", cursive;
+    }
+    .ch-amounts { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin: 40px 0; }
+    .ch-amt {
+      display: inline-block; padding: 22px 36px; text-decoration: none;
+      font-size: 32px; font-weight: 700; border: 5px solid #111;
+      box-shadow: 8px 8px 0 #111;
+      transition: transform .1s ease, box-shadow .1s ease;
+      font-family: "Comic Sans MS", cursive;
+    }
+    .ch-amt:hover { transform: translate(-3px, -3px); box-shadow: 12px 12px 0 #111; }
+    .ch-amt:active { transform: translate(4px, 4px); box-shadow: 4px 4px 0 #111; }
+    .ch-amt[data-variant="0"] { background: #fff; color: #111; transform: rotate(-2deg); }
+    .ch-amt[data-variant="1"] { background: #ff2d55; color: #fff; transform: rotate(2deg); }
+    .ch-amt[data-variant="2"] { background: #00c26e; color: #111; transform: rotate(-1deg); }
+
+    .ch-block {
+      background: #fff; border: 4px solid #111; padding: 28px; margin: 40px auto;
+      max-width: 720px; box-shadow: 10px 10px 0 #111;
+      position: relative;
+    }
+    .ch-block[data-tilt="l"] { transform: rotate(-.8deg); }
+    .ch-block[data-tilt="r"] { transform: rotate(.8deg); }
+    .ch-block h3 {
+      font-size: 32px; margin: 0 0 20px; display: inline-block;
+      background: #ffe600; padding: 6px 14px; border: 3px solid #111;
+    }
+    .ch-counter-big {
+      font-size: clamp(80px, 16vw, 180px); line-height: 1;
+      font-weight: 700; text-align: center; color: #ff2d55;
+      text-shadow: 6px 6px 0 #111;
+    }
+    .ch-review {
+      padding: 14px 16px; background: #fffbe0; margin-bottom: 14px;
+      border: 3px solid #111; font-family: "Comic Sans MS", cursive;
+    }
+    .ch-review:nth-child(2n) { transform: rotate(-.4deg); background: #e0fff4; }
+    .ch-review:nth-child(3n) { transform: rotate(.5deg); background: #ffe0f0; }
+    .ch-review .who { font-size: 13px; opacity: .7; margin-top: 6px; }
+
+    .ch-faq details { padding: 14px 0; border-bottom: 2px dashed #111; }
+    .ch-faq summary { font-size: 20px; font-weight: 700; cursor: pointer; list-style: none; }
+    .ch-faq summary::before { content: "⚠️ "; }
+    .ch-faq div { margin-top: 8px; padding-left: 24px; font-size: 17px; }
+  `;
+
+  return (
+    <>
+      <style>{ChaosStyles}</style>
+      <div className="ch-stage">
+        <div className="ch-sticker" style={{top: 20, left: 20, transform: "rotate(-8deg)"}}>не скам</div>
+        <div className="ch-sticker" style={{top: 80, right: 30, transform: "rotate(6deg)", background:"#00c26e"}}>честно</div>
+        <div className="ch-sticker" style={{top: 200, left: 40, transform: "rotate(4deg)", background:"#ff2d55", color:"#fff"}}>!!!</div>
+        <div className="ch-sticker" style={{top: 160, right: 60, transform: "rotate(-10deg)"}}>без регистрации</div>
+
+        <header className="ch-header">
+          <div className="ch-kicker">СРОЧНАЯ НОВОСТЬ</div>
+          <h1 className="ch-h1">
+            ДАЙ <span className="wigg">ДЕНЕГ</span><br/>БРАТ
+          </h1>
+          <div className="ch-sub">
+            я не шучу. буквально лендинг чтобы ты мне перевёл бабки. жми любую кнопку ↓
+          </div>
+
+          <div className="ch-amounts">
+            <PayButton amount={100} mode="chaos" onPaid={setLastAmt}>
+              <div className="ch-amt" data-variant="0">100₽ 🪙</div>
+            </PayButton>
+            <PayButton amount={500} mode="chaos" onPaid={setLastAmt}>
+              <div className="ch-amt" data-variant="1">500₽ 💸</div>
+            </PayButton>
+            <PayButton amount={1000} mode="chaos" onPaid={setLastAmt}>
+              <div className="ch-amt" data-variant="2">1000₽ 🤑</div>
+            </PayButton>
+          </div>
+
+          <div style={{fontSize: 18, fontWeight: 700, marginTop: 20}}>
+            {lastAmt ? `✅ ты выбрал ${lastAmt}₽ — король!` : "ну же, ну же, ну же"}
+          </div>
+        </header>
+
+        {showCounter && (
+          <div className="ch-block" data-tilt="l" style={{textAlign: "center"}}>
+            <h3>УЖЕ ЗАПЛАТИЛИ:</h3>
+            <div className="ch-counter-big">{paid}</div>
+            <div style={{fontSize: 20, fontWeight: 700}}>человек. а ты чего ждёшь 🤨</div>
+          </div>
+        )}
+
+        {showReviews && (
+          <div className="ch-block" data-tilt="r">
+            <h3>ЧТО ЛЮДИ ПИШУТ:</h3>
+            {REVIEWS.map((r, i) => (
+              <div key={i} className="ch-review">
+                «{r.text}»
+                <div className="who">— {r.who}, {r.where} {"★".repeat(r.stars)}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {showFaq && (
+          <div className="ch-block ch-faq" data-tilt="l">
+            <h3>ВОПРОСИКИ:</h3>
+            {FAQ.map((f, i) => (
+              <details key={i}>
+                <summary>{f.q}</summary>
+                <div>{f.a}</div>
+              </details>
+            ))}
+          </div>
+        )}
+
+        <div style={{textAlign: "center", margin: "60px auto 0", maxWidth: 500}}>
+          <div style={{fontSize: 20, fontWeight: 700, marginBottom: 20}}>
+            последний шанс:
+          </div>
+          <PayButton amount={500} mode="chaos" onPaid={setLastAmt}>
+            <div className="ch-amt" data-variant="1" style={{fontSize: 40, padding: "30px 50px"}}>
+              ⚡ ЗАПЛАТИТЬ ⚡
+            </div>
+          </PayButton>
+          <div style={{marginTop: 30, fontSize: 14, opacity: .7}}>
+            сделано с любовью и лёгкой наглостью
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* =========================================================
+   APP
+   ========================================================= */
+function App() {
+  const [state, setState] = useState(window.TWEAK_DEFAULTS || TWEAK_DEFAULTS);
+  const [tweaksOpen, setTweaksOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.setAttribute("data-mode", state.mode);
+  }, [state.mode]);
+
+  // Tweaks protocol
+  useEffect(() => {
+    const onMsg = (e) => {
+      const d = e.data || {};
+      if (d.type === "__activate_edit_mode") setTweaksOpen(true);
+      else if (d.type === "__deactivate_edit_mode") setTweaksOpen(false);
+    };
+    window.addEventListener("message", onMsg);
+    window.parent.postMessage({type: "__edit_mode_available"}, "*");
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+
+  const update = (patch) => {
+    const next = {...state, ...patch};
+    setState(next);
+    window.parent.postMessage({type: "__edit_mode_set_keys", edits: patch}, "*");
+  };
+
+  const MODE_COMPONENT = { receipt: ReceiptMode, startup: StartupMode, chaos: ChaosMode }[state.mode] || ReceiptMode;
+
+  return (
+    <>
+      <MODE_COMPONENT
+        showFaq={state.showFaq}
+        showReviews={state.showReviews}
+        showCounter={state.showCounter}
+      />
+
+      <div className="tweaks" data-open={tweaksOpen}>
+        <h4>Tweaks</h4>
+        <div style={{fontSize: 10, opacity: .5, marginBottom: 6, letterSpacing: ".1em"}}>РЕЖИМ</div>
+        <div className="row">
+          {[["receipt","Квитанция"],["startup","Стартап"],["chaos","Хаос"]].map(([k, label]) => (
+            <button key={k} className="chip" data-active={state.mode === k}
+              onClick={() => update({mode: k})}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <div style={{fontSize: 10, opacity: .5, margin: "4px 0 6px", letterSpacing: ".1em"}}>СЕКЦИИ</div>
+        <label className="toggle">
+          <span>Счётчик плательщиков</span>
+          <input type="checkbox" checked={state.showCounter}
+            onChange={e => update({showCounter: e.target.checked})}/>
+        </label>
+        <label className="toggle">
+          <span>Отзывы</span>
+          <input type="checkbox" checked={state.showReviews}
+            onChange={e => update({showReviews: e.target.checked})}/>
+        </label>
+        <label className="toggle">
+          <span>FAQ</span>
+          <input type="checkbox" checked={state.showFaq}
+            onChange={e => update({showFaq: e.target.checked})}/>
+        </label>
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
