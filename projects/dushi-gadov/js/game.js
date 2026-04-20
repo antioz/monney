@@ -70,7 +70,6 @@ function triggerStrangle(snake) {
   paused = true;
   cancelAnimationFrame(animId);
 
-  const cfg = levelConfig(level);
   startStrangle(snake, level, () => {
     score += 10 * level;
     level++;
@@ -86,18 +85,22 @@ function triggerStrangle(snake) {
 function triggerGameOver() {
   paused = true;
   cancelAnimationFrame(animId);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   showDeathScreen(score, level);
 }
 
-// Input
-canvas.addEventListener('click', e => {
-  handleTap(e.clientX, e.clientY);
-});
+// Input — prevent double-fire of click after touchstart on mobile
+let tapped = false;
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
+  tapped = true;
   const t = e.changedTouches[0];
   handleTap(t.clientX, t.clientY);
 }, { passive: false });
+canvas.addEventListener('click', e => {
+  if (tapped) { tapped = false; return; }
+  handleTap(e.clientX, e.clientY);
+});
 
 // Spawn timer
 let spawnTimer;
