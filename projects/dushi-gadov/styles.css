@@ -197,3 +197,10 @@ html, body {
 }
 
 .killed { animation: tongue-out 0.4s ease; }
+
+/* Prevent scroll interference on game interaction elements */
+#field,
+#strangle-overlay,
+#death-screen {
+  touch-action: none;
+}
