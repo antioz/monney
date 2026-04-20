@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d0d0d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>ДУШИ ГАДОВ</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    #field {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      touch-action: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="field"></canvas>
+
+  <div class="level-display" id="level-display">Уровень 1</div>
+  <div class="score-display" id="score-display">0</div>
+
+  <!-- Strangle overlay -->
+  <div id="strangle-overlay">
+    <canvas id="strangle-canvas" width="320" height="320"></canvas>
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <p class="strangle-hint" id="strangle-hint">Двигай вверх-вниз чтобы задушить!</p>
+  </div>
+
+  <!-- Death screen -->
+  <div id="death-screen">
+    <p class="death-label">Ты схватил не того!</p>
+    <p class="death-score" id="death-score">0 очков</p>
+    <canvas id="death-canvas" width="360" height="360"></canvas>
+    <div class="btn-row">
+      <button class="btn" id="share-btn">Поделиться</button>
+      <a href="index.html" class="btn btn-secondary">В начало</a>
+    </div>
+  </div>
+
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>
