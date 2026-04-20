@@ -1,0 +1,199 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0d0d;
+  --text: #f0f0f0;
+  --accent: #ff3b3b;
+  --btn-bg: #ff3b3b;
+  --btn-text: #fff;
+  --bar-fill: #ff3b3b;
+  --bar-bg: #333;
+
+  /* Snake colors */
+  --telegram: #2AABEE;
+  --instagram-1: #833AB4;
+  --instagram-2: #E1306C;
+  --instagram-3: #F77737;
+  --whatsapp: #25D366;
+  --vpn: #00FF41;
+  --vpn-bg: #1a1a2e;
+  --pornhub: #FF9000;
+  --pornhub-bg: #1a1a1a;
+
+  --vk: #0077FF;
+  --tbank: #FFDD2D;
+  --tbank-bg: #1a1a1a;
+  --sber: #21A038;
+  --yataxi: #FC3F1D;
+  --yataxi-bg: #1a1a1a;
+  --max-1: #4B6EF5;
+  --max-2: #8B5CF6;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Arial', sans-serif;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  padding: 24px;
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(2rem, 8vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
+  opacity: 0.6;
+  margin-bottom: 48px;
+}
+
+.btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 12px;
+  padding: 18px 48px;
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.1s, opacity 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active { transform: scale(0.96); opacity: 0.85; }
+
+.score-display {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.level-display {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+/* Strangle overlay */
+#strangle-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  touch-action: none;
+}
+
+#strangle-overlay.active { display: flex; }
+
+#strangle-canvas {
+  width: min(80vw, 320px);
+  height: min(80vw, 320px);
+}
+
+.progress-wrap {
+  width: min(80vw, 320px);
+  height: 24px;
+  background: var(--bar-bg);
+  border-radius: 12px;
+  margin-top: 24px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--bar-fill);
+  border-radius: 12px;
+  transition: width 0.05s linear;
+}
+
+.strangle-hint {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  opacity: 0.5;
+}
+
+/* Death screen */
+#death-screen {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+  text-align: center;
+}
+
+#death-screen.active { display: flex; }
+
+#death-canvas {
+  border-radius: 16px;
+  width: min(80vw, 360px);
+  height: min(80vw, 360px);
+  margin: 24px 0;
+}
+
+.death-score {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.death-label {
+  font-size: 0.9rem;
+  opacity: 0.5;
+  margin-bottom: 8px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-secondary {
+  background: #222;
+  color: var(--text);
+}
+
+/* Kill animation */
+@keyframes tongue-out {
+  0%   { transform: scaleY(1); }
+  50%  { transform: scaleY(1.05) rotate(-2deg); }
+  100% { transform: scaleY(1); }
+}
+
+.killed { animation: tongue-out 0.4s ease; }
