@@ -11,7 +11,8 @@ export function showDeathScreen(score, level) {
   deathScoreEl.textContent = `${score} очков`;
   deathScreen.classList.add('active');
   drawShareImage(score, level);
-  shareBtn.onclick = doShare;
+  const capturedScore = score;
+  shareBtn.onclick = () => { _score = capturedScore; doShare(); };
 }
 
 function drawShareImage(score, level) {
@@ -51,6 +52,7 @@ function drawShareImage(score, level) {
 }
 
 function drawSnakeBag(ctx, cx, cy, r) {
+  ctx.save();
   // Bag shape
   ctx.beginPath();
   ctx.ellipse(cx, cy + 10, r * 0.7, r * 0.55, 0, 0, Math.PI * 2);
@@ -93,26 +95,36 @@ function drawSnakeBag(ctx, cx, cy, r) {
     ctx.fillStyle = snakeColors[i];
     ctx.fill();
   }
+  ctx.restore();
+}
+
+function canvasToBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('toBlob returned null')));
+  });
 }
 
 async function doShare() {
-  deathCanvas.toBlob(async (blob) => {
-    const file = new File([blob], 'dushi-gadov.png', { type: 'image/png' });
-    const text = `Я задушил гадов на ${_score} очков в игре ДУШИ ГАДОВ!`;
+  let blob;
+  try { blob = await canvasToBlob(deathCanvas); }
+  catch (e) { console.error('Could not generate share image', e); return; }
 
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], text });
-        return;
-      } catch (e) {
-        if (e.name !== 'AbortError') console.warn('Share failed', e);
-      }
+  const file = new File([blob], 'dushi-gadov.png', { type: 'image/png' });
+  const text = `Я задушил гадов на ${_score} очков в игре ДУШИ ГАДОВ!`;
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], text });
+      return;
+    } catch (e) {
+      if (e.name !== 'AbortError') console.warn('Share failed', e);
     }
+  }
 
-    // Fallback: download
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'dushi-gadov.png';
-    a.click();
-  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dushi-gadov.png';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
