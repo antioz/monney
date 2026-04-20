@@ -29,9 +29,10 @@ Telegram Mini App, три HTML-страницы с общим `styles.css` и м
 
 ```
 projects/
-├── poproshaika/     — лендинг/монетизация (index.html, money.html, startup.html)
-├── chrono-soul-backend/ — backend Telegram Mini App
-└── dushi-gadov/     — веб-игра "ДУШИ ГАДОВ"
+├── poproshaika/          — лендинг/монетизация (index.html, money.html, startup.html)
+├── chrono-soul-archive/  — фронтенд Telegram Mini App (ChronoSoul)
+├── chrono-soul-backend/  — backend Telegram Mini App
+└── dushi-gadov/          — веб-игра "ДУШИ ГАДОВ" (в разработке)
 ```
 
 ## Production-требования (не реализовано в MVP)
