@@ -66,6 +66,7 @@ export const SNAKE_DEFS = [
 const SEG_RADIUS = 14;  // px, radius of each segment
 const SEG_GAP    = SEG_RADIUS * 1.8;
 const SEG_COUNT  = 10;
+const HISTORY_SIZE = Math.round(SEG_COUNT * SEG_GAP);
 
 export class Snake {
   /**
@@ -80,7 +81,6 @@ export class Snake {
     this.fieldW = fieldW;
     this.fieldH = fieldH;
     this.dead   = false;
-    this.clicked = false;
 
     // Start position — random edge
     const edge = Math.floor(Math.random() * 4);
@@ -92,7 +92,7 @@ export class Snake {
 
     // History of head positions for segment chaining
     this.history = [];
-    for (let i = 0; i < SEG_COUNT * SEG_GAP; i++) {
+    for (let i = 0; i < HISTORY_SIZE; i++) {
       this.history.push({ x: sx, y: sy });
     }
 
@@ -135,15 +135,14 @@ export class Snake {
 
     // Push to history
     this.history.unshift({ x: this.headX, y: this.headY });
-    if (this.history.length > SEG_COUNT * SEG_GAP * 2) {
-      this.history.length = SEG_COUNT * SEG_GAP;
-    }
+    if (this.history.length > HISTORY_SIZE) this.history.pop();
 
     return false;
   }
 
   /** Draw onto canvas context */
   draw(ctx) {
+    ctx.save();
     const { colors } = this.def;
 
     for (let i = SEG_COUNT - 1; i >= 0; i--) {
@@ -235,10 +234,12 @@ export class Snake {
       ctx.lineTo(tx + Math.cos(angle - 0.4) * 5, ty + Math.sin(angle - 0.4) * 5);
       ctx.stroke();
     }
+    ctx.restore();
   }
 
   /** Hit-test: did the tap/click land on this snake's head area? */
   hitTest(x, y) {
+    if (this.dead) return false;
     const head = this.history[0];
     return Math.hypot(x - head.x, y - head.y) < SEG_RADIUS * 2.5;
   }
