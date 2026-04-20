@@ -36,7 +36,7 @@ html, body {
   color: var(--text);
   font-family: 'Arial', sans-serif;
   overflow: hidden;
-  touch-action: none;
+  touch-action: manipulation;
 }
 
 .screen {
