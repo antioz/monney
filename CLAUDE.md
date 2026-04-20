@@ -42,3 +42,8 @@ projects/
 - БД: таблицы `users`, `life_results`, `entitlements`, `payments`
 - Версионирование алгоритма (`generator_version`) при изменении логики генерации
 - Верификация шэра и реальные платежи Telegram Stars через webhook
+
+## URLs проектов
+
+- ДУШИ ГАДОВ: https://antioz.github.io/monney/projects/dushi-gadov/
+- Попрошайка: https://antioz.github.io/monney/projects/poproshaika/
