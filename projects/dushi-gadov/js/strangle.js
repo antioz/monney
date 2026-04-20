@@ -14,6 +14,7 @@ let animId        = null;
 let killedTimer   = null;
 
 const STROKE_VALUE = 4;  // progress per direction-change stroke
+let fistPhase = 0; // animation phase for fist movement
 
 /**
  * @param {Snake}    snake
@@ -30,6 +31,7 @@ export function startStrangle(snake, level, completeCb) {
   required     = 100 + level * 20;
   lastY        = null;
   lastDir      = null;
+  fistPhase    = 0;
 
   hint.textContent = level < 3
     ? 'Двигай вверх-вниз!'
@@ -102,6 +104,7 @@ function killSnake() {
 }
 
 function animateStrangle() {
+  fistPhase += 0.08;
   drawStrangleScreen(false);
   animId = requestAnimationFrame(animateStrangle);
 }
@@ -133,15 +136,22 @@ function drawStrangleScreen(killed) {
     drawNoSignal(cx, cy + snakeR + 40);
   } else {
     drawAliveEyes(cx, cy, snakeR);
-    drawFist(cx, cy - snakeR);
+    drawFist(cx, cy, snakeR);
   }
 }
 
-function drawFist(x, y) {
-  sCtx.font = '52px serif';
+function drawFist(cx, cy, snakeR) {
+  // Fist oscillates up-down along neck
+  const fistY = cy - snakeR * 0.3 + Math.sin(fistPhase) * snakeR * 0.35;
+  sCtx.save();
+  sCtx.font = '48px serif';
   sCtx.textAlign = 'center';
-  sCtx.textBaseline = 'bottom';
-  sCtx.fillText('✊', x, y + 8);
+  sCtx.textBaseline = 'middle';
+  // Slight squeeze scale based on position (squeezes when lower)
+  const squeeze = 1 + (Math.sin(fistPhase) + 1) * 0.08;
+  sCtx.scale(squeeze, 1 / squeeze);
+  sCtx.fillText('✊', cx / squeeze, fistY * squeeze);
+  sCtx.restore();
 }
 
 function drawAliveEyes(cx, cy, r) {

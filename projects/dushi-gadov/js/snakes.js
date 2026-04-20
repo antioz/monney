@@ -51,7 +51,7 @@ export const SNAKE_DEFS = [
   },
   {
     id: 'yataxi',
-    type: 'good',
+    type: 'bad',
     colors: ['#FC3F1D', '#1a1a1a'],
     label: 'YT',
   },
@@ -145,45 +145,64 @@ export class Snake {
     ctx.save();
     const { colors } = this.def;
 
-    for (let i = SEG_COUNT - 1; i >= 0; i--) {
-      const pos = this.history[Math.floor(i * SEG_GAP)] || this.history[this.history.length - 1];
-      const t = i / SEG_COUNT;
+    if (this.history.length < 2) { ctx.restore(); return; }
 
-      // Color — cycle through def.colors along body
+    // Build smooth path through history points (use every 3rd for perf)
+    const pts = [];
+    for (let i = 0; i < HISTORY_SIZE; i += 3) {
+      pts.push(this.history[i] || this.history[this.history.length - 1]);
+    }
+    if (pts.length < 2) { ctx.restore(); return; }
+
+    // Draw body as thick tapered stroke
+    // Draw in segments so we can taper width and change color
+    const segCount = pts.length - 1;
+    for (let i = 0; i < segCount; i++) {
+      const t = i / segCount; // 0 = head, 1 = tail
+      const p0 = pts[i];
+      const p1 = pts[i + 1];
+
       const colorIdx = Math.floor(t * colors.length) % colors.length;
       const color = colors[colorIdx];
-
-      // Taper body toward tail
-      const r = SEG_RADIUS * (1 - t * 0.5);
+      const lineW = SEG_RADIUS * 2 * (1 - t * 0.55); // taper toward tail
 
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-
-      // Eyes on head segment
-      if (i === 0) {
-        this._drawEyes(ctx, pos, this.angle, r, this.dead);
-      }
+      ctx.moveTo(p0.x, p0.y);
+      ctx.lineTo(p1.x, p1.y);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineW;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
     }
 
-    // Label on body center segment
-    const labelPos = this.history[Math.floor(3 * SEG_GAP)] || this.history[0];
-    ctx.font = `bold ${SEG_RADIUS * 0.9}px Arial`;
+    // Head — filled circle with eyes
+    const head = pts[0];
+    const headR = SEG_RADIUS;
+    ctx.beginPath();
+    ctx.arc(head.x, head.y, headR, 0, Math.PI * 2);
+    ctx.fillStyle = colors[0];
+    ctx.fill();
+
+    this._drawEyes(ctx, head, this.angle, headR, this.dead);
+
+    // Label near neck (3rd point)
+    const labelPos = pts[Math.min(3, pts.length - 1)];
+    ctx.font = `bold ${SEG_RADIUS * 0.85}px Arial`;
     ctx.fillStyle = colors.length > 1 ? colors[1] : '#fff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(this.def.label, labelPos.x, labelPos.y);
 
-    // Good snake indicator — small ✓ halo
+    // Good snake halo
     if (this.def.type === 'good') {
-      const head = this.history[0];
       ctx.beginPath();
-      ctx.arc(head.x, head.y, SEG_RADIUS + 4, 0, Math.PI * 2);
+      ctx.arc(head.x, head.y, headR + 4, 0, Math.PI * 2);
       ctx.strokeStyle = 'rgba(255,255,255,0.25)';
       ctx.lineWidth = 2;
       ctx.stroke();
     }
+
     ctx.restore();
   }
 
@@ -237,11 +256,17 @@ export class Snake {
     }
   }
 
-  /** Hit-test: did the tap/click land on this snake's head area? */
+  /** Hit-test: did the tap/click land on this snake's body? */
   hitTest(x, y) {
     if (this.dead) return false;
-    const head = this.history[0];
-    return Math.hypot(x - head.x, y - head.y) < SEG_RADIUS * 2.5;
+    // Check every 3rd history point (matches draw sampling)
+    for (let i = 0; i < HISTORY_SIZE; i += 3) {
+      const p = this.history[i];
+      if (!p) continue;
+      const r = SEG_RADIUS * (1 - (i / HISTORY_SIZE) * 0.55) + 6; // tolerance
+      if (Math.hypot(x - p.x, y - p.y) < r) return true;
+    }
+    return false;
   }
 
   get headPos() {
