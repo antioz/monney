@@ -21,6 +21,9 @@ const STROKE_VALUE = 4;  // progress per direction-change stroke
  * @param {function} completeCb — called when progress reaches required
  */
 export function startStrangle(snake, level, completeCb) {
+  if (killedTimer !== null) { clearTimeout(killedTimer); killedTimer = null; }
+  if (animId !== null) { cancelAnimationFrame(animId); animId = null; }
+  removeListeners();
   currentSnake = snake;
   onComplete   = completeCb;
   progress     = 0;
@@ -41,11 +44,15 @@ export function startStrangle(snake, level, completeCb) {
   overlay.addEventListener('touchmove', onTouchMove, { passive: false });
   overlay.addEventListener('pointermove', onPointerMove);
   overlay.addEventListener('pointerdown', onPointerDown);
+  overlay.addEventListener('pointerup', onPointerUp);
+  overlay.addEventListener('pointercancel', onPointerUp);
 }
 
 function onPointerDown(e) {
   lastY = e.clientY;
 }
+
+function onPointerUp() { lastY = null; }
 
 function onPointerMove(e) {
   if (lastY === null) return;
@@ -212,4 +219,6 @@ function removeListeners() {
   overlay.removeEventListener('touchmove', onTouchMove);
   overlay.removeEventListener('pointermove', onPointerMove);
   overlay.removeEventListener('pointerdown', onPointerDown);
+  overlay.removeEventListener('pointerup', onPointerUp);
+  overlay.removeEventListener('pointercancel', onPointerUp);
 }
