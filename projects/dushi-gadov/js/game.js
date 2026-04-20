@@ -85,6 +85,7 @@ function triggerStrangle(snake) {
 function triggerGameOver() {
   paused = true;
   cancelAnimationFrame(animId);
+  clearInterval(spawnTimer);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   showDeathScreen(score, level);
 }

@@ -184,6 +184,7 @@ export class Snake {
       ctx.lineWidth = 2;
       ctx.stroke();
     }
+    ctx.restore();
   }
 
   _drawEyes(ctx, pos, angle, r, dead) {
@@ -234,7 +235,6 @@ export class Snake {
       ctx.lineTo(tx + Math.cos(angle - 0.4) * 5, ty + Math.sin(angle - 0.4) * 5);
       ctx.stroke();
     }
-    ctx.restore();
   }
 
   /** Hit-test: did the tap/click land on this snake's head area? */
