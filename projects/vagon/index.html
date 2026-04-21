@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Автоматический конвертор</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- MAIN -->
+  <section id="screen-main" class="active">
+    <header class="app-header">
+      <h1>Контент-завод им. Антиосова</h1>
+    </header>
+    <div class="main-content">
+      <div class="title-block">
+        <h2>Автоматический<br>конвертор</h2>
+        <p class="subtitle">Модель 1.0</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*" style="display:none">
+      <button class="btn btn-primary" id="btn-upload">Загрузить</button>
+    </div>
+    <footer>
+      <p>Сделано на контент-заводе им. Антиосова</p>
+    </footer>
+  </section>
+
+  <!-- LOADING -->
+  <section id="screen-loading">
+    <p class="loading-label">Идёт обработка</p>
+    <p class="loading-title">Пожалуйста,<br>подождите</p>
+    <div class="progress-track">
+      <div class="progress-bar"></div>
+    </div>
+    <div class="loading-steps">
+      <p class="step">▶ Анализ входных данных...</p>
+      <p class="step">▶ Применение алгоритма...</p>
+      <p class="step">▶ Формирование результата...</p>
+    </div>
+  </section>
+
+  <!-- PHOTO RESULT -->
+  <section id="screen-photo">
+    <header class="app-header">
+      <h1>Результат конвертации</h1>
+    </header>
+    <div class="result-content">
+      <p class="result-label">▶ Фото получено</p>
+      <img class="result-img" src="assets/output.jpg" alt="Результат">
+      <button class="btn btn-secondary" id="btn-make-video">Сделать видео</button>
+      <button class="btn btn-outline" onclick="document.getElementById('btn-restart').click()">В начало</button>
+    </div>
+    <footer>
+      <p>Сделано на контент-заводе им. Антиосова</p>
+    </footer>
+  </section>
+
+  <!-- VIDEO RESULT -->
+  <section id="screen-video">
+    <header class="app-header">
+      <h1>Готово — видео</h1>
+    </header>
+    <div class="result-content">
+      <p class="result-label">▶ Видео сформировано</p>
+      <video class="result-video" id="result-video" controls playsinline>
+        <source src="assets/output.mp4" type="video/mp4">
+      </video>
+      <button class="btn btn-outline" id="btn-restart">В начало</button>
+    </div>
+    <footer>
+      <p>Сделано на контент-заводе им. Антиосова</p>
+    </footer>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
