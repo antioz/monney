@@ -3,6 +3,7 @@ const screens = {
   loading: document.getElementById('screen-loading'),
   photo: document.getElementById('screen-photo'),
   video: document.getElementById('screen-video'),
+  info: document.getElementById('screen-info'),
 };
 
 const progressBar = document.querySelector('.progress-bar');
@@ -17,9 +18,9 @@ document.getElementById('btn-upload').addEventListener('click', () => {
   document.getElementById('file-input').click();
 });
 
-document.getElementById('file-input').addEventListener('change', startLoading);
+document.getElementById('file-input').addEventListener('change', () => startLoading('photo'));
 
-function startLoading(target = 'photo') {
+function startLoading(target) {
   show('loading');
   progressBar.classList.remove('running');
   steps.forEach(s => s.classList.remove('done'));
@@ -30,13 +31,13 @@ function startLoading(target = 'photo') {
   setTimeout(() => steps[2].classList.add('done'), 2700);
   setTimeout(() => {
     if (target === 'video') document.getElementById('result-video').load();
+    if (target === 'info') document.getElementById('result-info-video').load();
     show(target);
   }, 3000);
 }
 
-document.getElementById('btn-make-video').addEventListener('click', () => {
-  startLoading('video');
-});
+document.getElementById('btn-make-video').addEventListener('click', () => startLoading('video'));
+document.getElementById('btn-make-info').addEventListener('click', () => startLoading('info'));
 
 document.getElementById('btn-restart').addEventListener('click', () => {
   document.getElementById('file-input').value = '';

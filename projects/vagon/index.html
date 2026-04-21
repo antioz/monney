@@ -47,8 +47,9 @@
     </header>
     <div class="result-content">
       <p class="result-label">▶ Фото получено</p>
-      <img class="result-img" src="assets/output.jpg" alt="Результат">
+      <img class="result-img" src="assets/output.png" alt="Результат">
       <button class="btn btn-secondary" id="btn-make-video">Сделать видео</button>
+      <button class="btn btn-secondary" id="btn-make-info">Инфографика</button>
       <button class="btn btn-outline" onclick="document.getElementById('btn-restart').click()">В начало</button>
     </div>
     <footer>
@@ -67,6 +68,24 @@
         <source src="assets/output.mp4" type="video/mp4">
       </video>
       <button class="btn btn-outline" id="btn-restart">В начало</button>
+    </div>
+    <footer>
+      <p>Сделано на контент-заводе им. Антиосова</p>
+    </footer>
+  </section>
+
+  <!-- INFO RESULT -->
+  <section id="screen-info">
+    <header class="app-header">
+      <h1>Готово — инфографика</h1>
+    </header>
+    <div class="result-content">
+      <p class="result-label">▶ Инфографика готова</p>
+      <img class="result-img" src="assets/info.png" alt="Инфографика">
+      <video class="result-video" id="result-info-video" controls playsinline>
+        <source src="assets/info.mp4" type="video/mp4">
+      </video>
+      <button class="btn btn-outline" onclick="document.getElementById('btn-restart').click()">В начало</button>
     </div>
     <footer>
       <p>Сделано на контент-заводе им. Антиосова</p>
