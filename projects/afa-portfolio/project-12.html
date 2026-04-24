@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Штаб-квартира Иннотех — АФА</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #fff;
+      overflow-x: hidden;
+    }
+
+    .scene-wrapper {
+      width: 1920px;
+      height: 1102px;
+      transform-origin: top left;
+    }
+
+    .scene {
+      position: relative;
+      width: 1920px;
+      height: 1102px;
+      background: #fff;
+      box-shadow: 0 4px 4px rgba(0,0,0,0.25);
+      overflow: hidden;
+    }
+
+    /* Background image, opacity 50% */
+    .bg-image {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1102px;
+      opacity: 0.5;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    /* Decorative ellipse bottom-right */
+    .ellipse {
+      position: absolute;
+      left: 1607px;
+      top: 774px;
+      width: 626px;
+      height: 626px;
+    }
+
+    /* Left photo group */
+    .photo-group {
+      position: absolute;
+      left: 72px;
+      top: 74px;
+      width: 820px;
+      height: 960px;
+      overflow: hidden;
+    }
+    .photo-group img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* №12 */
+    .num {
+      position: absolute;
+      left: 983.22px;
+      top: 112.6px;
+      width: 158.313px;
+      height: 53.4px;
+    }
+
+    /* Pink badge pill */
+    .pink-badge {
+      position: absolute;
+      left: 977px;
+      top: 287px;
+      width: 768px;
+      height: 54px;
+      background: #eed9d5;
+      border-radius: 100px;
+    }
+
+    /* Subtitle text on badge */
+    .subtitle {
+      position: absolute;
+      left: 999.54px;
+      top: 303.82px;
+      width: 730.302px;
+      height: 26.1px;
+    }
+
+    /* Title: Штаб-квартира Иннотех */
+    .title-img {
+      position: absolute;
+      left: 982.66px;
+      top: 382.5px;
+      width: 596.501px;
+      height: 118.28px;
+    }
+
+    /* Description text */
+    .description {
+      position: absolute;
+      left: 978.6px;
+      top: 531.42px;
+      width: 541.117px;
+      height: 112.775px;
+    }
+
+    /* Details block */
+    .details {
+      position: absolute;
+      left: 976.65px;
+      top: 764.04px;
+      width: 571.053px;
+      height: 263.255px;
+    }
+
+    /* Year 2023 vertical */
+    .year {
+      position: absolute;
+      left: 132.06px;
+      top: 754.41px;
+      width: 48.28px;
+      height: 213.09px;
+    }
+
+    /* Grey placeholder rectangle */
+    .placeholder-rect {
+      position: absolute;
+      left: 515px;
+      top: 1034px;
+      width: 191px;
+      height: 68px;
+      background: #d9d9d9;
+    }
+
+    /* Vector / AF logo */
+    .vector {
+      position: absolute;
+      top: 12.88%;
+      right: 79.65%;
+      bottom: 69.94%;
+      left: 6.09%;
+    }
+    .vector img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Decorative pill 1 */
+    .pill-wrap-1 {
+      position: absolute;
+      left: 1201px;
+      top: -197px;
+      width: 444.545px;
+      height: 475.835px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pill-1 {
+      background: #ffece9;
+      height: 129px;
+      width: 522.837px;
+      border-radius: 100px;
+      transform: rotate(48.22deg);
+      flex-shrink: 0;
+    }
+
+    /* Decorative pill 2 */
+    .pill-wrap-2 {
+      position: absolute;
+      left: 1446px;
+      top: -148px;
+      width: 640.326px;
+      height: 694.962px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pill-2 {
+      background: #ffece9;
+      height: 129px;
+      width: 816.684px;
+      border-radius: 100px;
+      transform: rotate(48.22deg);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="scene-wrapper" id="sceneWrapper">
+    <div class="scene">
+
+      <!-- Background image -->
+      <img class="bg-image" src="https://www.figma.com/api/mcp/asset/29f382ae-eacb-4cfd-ad8b-fd0cc80ecb95" alt="" />
+
+      <!-- Decorative ellipse -->
+      <img class="ellipse" src="https://www.figma.com/api/mcp/asset/1cb885d5-04ff-4fa3-adf0-80549df314bf" alt="" />
+
+      <!-- Decorative pills -->
+      <div class="pill-wrap-1"><div class="pill-1"></div></div>
+      <div class="pill-wrap-2"><div class="pill-2"></div></div>
+
+      <!-- Left: office photo -->
+      <div class="photo-group">
+        <img src="https://www.figma.com/api/mcp/asset/425f7a20-21da-4449-a94a-72078e8bb717" alt="Офис Иннотех" />
+      </div>
+
+      <!-- Year -->
+      <img class="year" src="https://www.figma.com/api/mcp/asset/126e8324-ce3a-4007-8ab0-b6b4db29a091" alt="2023 Г." />
+
+      <!-- Grey placeholder -->
+      <div class="placeholder-rect"></div>
+
+      <!-- AF Vector logo -->
+      <div class="vector">
+        <img src="https://www.figma.com/api/mcp/asset/0c337939-cf6b-42dd-8d8a-e09fd7478f63" alt="AF" />
+      </div>
+
+      <!-- Right side content -->
+      <img class="num" src="https://www.figma.com/api/mcp/asset/3cefd4e8-6ff7-4be0-8eb9-54a44d9abd8e" alt="№12" />
+
+      <div class="pink-badge"></div>
+      <img class="subtitle" src="https://www.figma.com/api/mcp/asset/8dccd1bc-e3ba-4076-b48b-04d758d26c74" alt="Штаб-квартира ИТ-компании в БЦ Арена" />
+
+      <img class="title-img" src="https://www.figma.com/api/mcp/asset/31569232-d66a-445c-a757-00d20ed93eb3" alt="Штаб-квартира Иннотех" />
+      <img class="description" src="https://www.figma.com/api/mcp/asset/990ee524-9a02-4675-813f-3611b0ea17d6" alt="Описание проекта" />
+      <img class="details" src="https://www.figma.com/api/mcp/asset/f5fd21c7-c5e4-4c6f-be62-9d16bb61dff5" alt="Площадь, вид работ, регион, адрес" />
+
+    </div>
+  </div>
+
+  <script>
+    function scale() {
+      const wrapper = document.getElementById('sceneWrapper');
+      const s = window.innerWidth / 1920;
+      wrapper.style.transform = `scale(${s})`;
+      document.body.style.height = Math.round(1102 * s) + 'px';
+    }
+    scale();
+    window.addEventListener('resize', scale);
+  </script>
+</body>
+</html>

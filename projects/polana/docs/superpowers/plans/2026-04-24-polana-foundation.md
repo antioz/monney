@@ -2,7 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Форкнуть ChraumaTactics, поднять на Unity 6, заложить архитектуру данных (ScriptableObjects + EventBus) — проект компилируется, данные 9 юнитов и 3 фракций заведены.
+**Goal:** Создать Unity 6 проект с нуля, заложить архитектуру данных (ScriptableObjects + EventBus) — проект компилируется, данные 9 юнитов и 3 фракций заведены.
+
+> ⚠️ **Решение 25.04.2026:** ChraumaTactics не имеет лицензии → форк невозможен для коммерческого продукта → пишем с нуля.
 
 **Architecture:** ScriptableObjects как единственный источник данных юнитов/фракций/банд. EventBus для развязки менеджеров. Мультиплеер сразу паркуется в отдельную ветку чтобы не мешал.
 
@@ -42,133 +44,57 @@ Assets/
 
 ---
 
-## Task 1: Проверка лицензии и форк
+## Task 1: Создать Unity 6 проект с нуля
 
 **Files:**
-- Читаем: `github.com/TaillepierreN/ChraumaTactics` → LICENSE файл
+- Новый Unity проект: `~/Documents/polana-game/`
 
-- [ ] **Step 1: Открыть LICENSE файл репозитория**
+- [x] ~~Step 0: Проверка лицензии ChraumaTactics~~ — лицензии нет, пишем с нуля (25.04.2026)
 
-В браузере открыть: `https://github.com/TaillepierreN/ChraumaTactics/blob/main/LICENSE`
+- [ ] **Step 1: Установить Unity 6000.0 LTS через Unity Hub**
 
-Ожидаем: MIT или Apache 2.0 → можно форкать для коммерческого продукта.
-Если GPL → нельзя закрывать исходники → нужен другой форк или писать с нуля.
+1. Открыть Unity Hub
+2. Installs → Install Editor → выбрать **Unity 6000.0 LTS**
+3. Дождаться установки
 
-- [ ] **Step 2: Сделать форк через GitHub UI**
+- [ ] **Step 2: Создать новый проект**
 
-1. Открыть `https://github.com/TaillepierreN/ChraumaTactics`
-2. Fork → Create fork → название репо: `polana-game`
-3. Склонировать локально:
+1. Unity Hub → New Project
+2. Template: **3D (URP)** — Universal Render Pipeline, нужен для low-poly визуала
+3. Project name: `polana-game`
+4. Location: `~/Documents/`
+5. Create project → дождаться генерации
 
-```bash
-git clone https://github.com/<your-username>/polana-game.git
-cd polana-game
-```
-
-- [ ] **Step 3: Запомнить upstream**
+- [ ] **Step 3: Инициализировать git репо**
 
 ```bash
-git remote add upstream https://github.com/TaillepierreN/ChraumaTactics.git
-git fetch upstream
+cd ~/Documents/polana-game
+git init
+git remote add origin https://github.com/antioz/polana-game.git
 ```
 
-- [ ] **Step 4: Commit**
+Создать `.gitignore` для Unity (стандартный):
 
-```bash
-git commit --allow-empty -m "chore: fork ChraumaTactics as POLANA base"
-git push origin main
+```
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+.DS_Store
 ```
 
----
-
-## Task 2: Парковка мультиплеера
-
-**Files:**
-- Ветка: `multiplayer-parked`
-
-- [ ] **Step 1: Создать ветку-архив для мультиплеера**
-
-```bash
-git checkout -b multiplayer-parked
-git push origin multiplayer-parked
-git checkout main
-```
-
-- [ ] **Step 2: Найти и отключить сетевые компоненты**
-
-Найти все файлы с Netcode/Mirror/NetworkBehaviour:
-
-```bash
-grep -r "NetworkBehaviour\|NetworkManager\|Mirror\|Netcode" Assets/Scripts --include="*.cs" -l
-```
-
-Для каждого найденного файла — обернуть класс в `#if MULTIPLAYER_ENABLED`:
-
-```csharp
-#if MULTIPLAYER_ENABLED
-// весь сетевой код
-#endif
-```
-
-- [ ] **Step 3: Проверить что проект компилируется**
-
-В Unity Editor: открыть проект, подождать компиляцию, убедиться что Console не показывает ошибок компиляции (warnings — ок).
-
-- [ ] **Step 4: Commit**
+- [ ] **Step 4: Первый коммит**
 
 ```bash
 git add -A
-git commit -m "chore: park multiplayer behind MULTIPLAYER_ENABLED flag"
-git push origin main
-```
-
----
-
-## Task 3: Апгрейд до Unity 6000.0 LTS
-
-**Files:**
-- `ProjectSettings/ProjectVersion.txt`
-
-- [ ] **Step 1: Открыть проект в Unity Hub**
-
-1. Unity Hub → Add → выбрать папку `polana-game`
-2. Если Hub предлагает выбрать версию — выбрать Unity 6000.0 LTS
-3. Нажать Open → дождаться конвертации
-
-- [ ] **Step 2: Починить типичные breaking changes Unity 6**
-
-После открытия в Console будут ошибки. Типичные:
-
-**Input System:**
-```csharp
-// Старый код:
-Input.GetAxis("Horizontal")
-// Unity 6 — ок, старый Input работает. Если используется new Input System:
-// PlayerInput компонент → проверить Actions asset путь
-```
-
-**URP / Render Pipeline:**
-```bash
-# Если проект на Built-in RP и ругается:
-# Edit → Render Pipeline → Upgrade Project Materials to URP
-```
-
-**Устаревшие API:**
-```csharp
-// Если видишь FindObjectOfType warnings — оставь пока, не трогай
-// Фиксить будем когда будем переписывать менеджеры
-```
-
-- [ ] **Step 3: Убедиться что сцена открывается без ошибок**
-
-В Console должно быть 0 ошибок (красных). Жёлтые warnings — допустимо.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add -A
-git commit -m "chore: upgrade to Unity 6000.0 LTS, fix breaking changes"
-git push origin main
+git commit -m "chore: init Unity 6 URP project for POLANA"
+git push -u origin main
 ```
 
 ---

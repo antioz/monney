@@ -1,0 +1,82 @@
+<h2>Архитектура Поляна-2</h2>
+<p class="subtitle">Telegram Mini App + Node.js бэкенд → MMORPG</p>
+
+<div class="section">
+  <h3>Общая схема</h3>
+  <div style="font-family: monospace; font-size: 13px; background: #1a1a2e; color: #e0e0e0; border-radius: 8px; padding: 20px; line-height: 2;">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+      <div style="background: #0f3460; border: 1px solid #533483; border-radius: 6px; padding: 8px 16px; color: #e94560; font-weight: bold;">Telegram Mini App</div>
+      <div style="color: #888;">HTML/CSS/JS</div>
+    </div>
+    <div style="padding-left: 40px; color: #533483; font-size: 18px;">↕ REST API (JSON)</div>
+    <div style="display: flex; align-items: center; gap: 12px; margin: 8px 0;">
+      <div style="background: #0f3460; border: 1px solid #533483; border-radius: 6px; padding: 8px 16px; color: #e94560; font-weight: bold;">Node.js + Express</div>
+      <div style="color: #888;">Бэкенд — вся игровая логика</div>
+    </div>
+    <div style="padding-left: 40px; color: #533483; font-size: 18px;">↕</div>
+    <div style="display: flex; gap: 12px; margin-top: 8px;">
+      <div style="background: #0f3460; border: 1px solid #533483; border-radius: 6px; padding: 8px 16px; color: #00b4d8;">PostgreSQL<br><span style="font-size: 11px; color: #888;">Профили, бойцы, прогресс</span></div>
+      <div style="background: #0f3460; border: 1px solid #533483; border-radius: 6px; padding: 8px 16px; color: #00b4d8;">Redis<br><span style="font-size: 11px; color: #888;">Сессии, текущий бой</span></div>
+      <div style="background: #0f3460; border: 1px solid #533483; border-radius: 6px; padding: 8px 16px; color: #00b4d8;">JSON конфиги<br><span style="font-size: 11px; color: #888;">Бойцы, навыки, районы</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Серверные модули (изолированные)</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
+    <div style="background: #0f3460; border-left: 3px solid #e94560; border-radius: 4px; padding: 10px;">
+      <strong style="color: #e94560;">Auth</strong><br>
+      <span style="color: #aaa;">Telegram initData верификация</span>
+    </div>
+    <div style="background: #0f3460; border-left: 3px solid #e94560; border-radius: 4px; padding: 10px;">
+      <strong style="color: #e94560;">PlayerService</strong><br>
+      <span style="color: #aaa;">Профиль Старшего, коллекция</span>
+    </div>
+    <div style="background: #0f3460; border-left: 3px solid #e94560; border-radius: 4px; padding: 10px;">
+      <strong style="color: #e94560;">BattleResolver</strong><br>
+      <span style="color: #aaa;">Пошаговый бой, AGI-порядок</span>
+    </div>
+    <div style="background: #0f3460; border-left: 3px solid #e94560; border-radius: 4px; padding: 10px;">
+      <strong style="color: #e94560;">CaptureService</strong><br>
+      <span style="color: #aaa;">Захват бойцов + вербовка</span>
+    </div>
+    <div style="background: #0f3460; border-left: 3px solid #e94560; border-radius: 4px; padding: 10px;">
+      <strong style="color: #e94560;">CampaignService</strong><br>
+      <span style="color: #aaa;">Районы, волны врагов, энергия</span>
+    </div>
+    <div style="background: #0f3460; border-left: 3px solid #533483; border-radius: 4px; padding: 10px;">
+      <strong style="color: #a78bfa;">[MMORPG] WorldService</strong><br>
+      <span style="color: #aaa;">Карта города, захват районов</span>
+    </div>
+    <div style="background: #0f3460; border-left: 3px solid #533483; border-radius: 4px; padding: 10px;">
+      <strong style="color: #a78bfa;">[MMORPG] PvPService</strong><br>
+      <span style="color: #aaa;">Фирма vs фирма, рейды</span>
+    </div>
+    <div style="background: #0f3460; border-left: 3px solid #533483; border-radius: 4px; padding: 10px;">
+      <strong style="color: #a78bfa;">[MMORPG] WebSocket</strong><br>
+      <span style="color: #aaa;">Реалтайм для PvP</span>
+    </div>
+  </div>
+  <p style="color: #888; font-size: 12px; margin-top: 8px;">Красный — демо. Фиолетовый — MMORPG-расширение (не трогаем в демо).</p>
+</div>
+
+<div class="section">
+  <h3>Всё выглядит правильно?</h3>
+  <div class="options">
+    <div class="option" data-choice="yes" onclick="toggleSelect(this)">
+      <div class="letter">✓</div>
+      <div class="content">
+        <h3>Да, архитектура ок</h3>
+        <p>Идём к дизайну игровых экранов</p>
+      </div>
+    </div>
+    <div class="option" data-choice="change" onclick="toggleSelect(this)">
+      <div class="letter">✎</div>
+      <div class="content">
+        <h3>Хочу изменить</h3>
+        <p>Скажу что именно в терминале</p>
+      </div>
+    </div>
+  </div>
+</div>

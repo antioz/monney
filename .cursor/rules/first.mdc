@@ -1,0 +1,14 @@
+---
+alwaysApply: true
+---
+
+Project should contain index.html, some js files, some css files, some js data files. 
+- For each new project create UNIQUE slug&name - project-name. It will be in the url so make it url like and describable.
+- For each new project create its own folder in projects/{project-name}
+- For each project create readme file in the project folder.
+- Readme should contain Title, Description and Features.
+- When you add somethin new - update readme.
+- Readme should be in Russian.
+- All const content should be js files in the {project-name}/data/ folder. For example if you generate questions for project then it should be stored in data/questions.js.
+- Dont base your answer on other project. Make each project unique from scratch.
+- Always answer in Russian!

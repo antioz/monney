@@ -209,9 +209,7 @@
 
 - **Движок:** Unity 6 (6000.0 LTS)
 - **Язык:** C#
-- **Опенсорс основа:** форк **ChraumaTactics** (`github.com/TaillepierreN/ChraumaTactics`)
-  - Активен (авг 2025), есть: расстановка на сетку, бой, синергии, 16+ юнитов, мультиплеер
-  - Нужно дописать: слияние 3→1 (отдельный менеджер)
+- **Опенсорс основа:** ~~форк ChraumaTactics~~ → **пишем с нуля** (нет лицензии — коммерческий форк невозможен, 25.04.2026)
 - **MCP интеграция:** Unity MCP — варианты:
   - [Unity официальный MCP](https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.0/manual/unity-mcp-overview.html)
   - [CoplayDev/unity-mcp](https://github.com/CoplayDev/unity-mcp)
@@ -219,7 +217,7 @@
 - **Разработка:** Claude Code + Cursor, агенты управляют Unity через MCP
 - **Деплой:** PC (первый), Steam (потенциально)
 
-**Подход:** Форк ChraumaTactics + замена визуала и данных юнитов на дизайн ПОЛЯНЫ. Spec разбит по зонам — каждый блок берёт отдельный агент.
+**Подход:** Unity 6 URP проект с нуля. ScriptableObject архитектура данных + EventBus. Spec разбит по зонам — каждый блок берёт отдельный агент.
 
 ---
 

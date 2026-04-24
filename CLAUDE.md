@@ -1,49 +1,95 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Монорепо со статическими веб-проектами. Деплой — GitHub Pages, репозиторий `antioz/monney`.
 
-## Запуск
+## Правила работы
 
-Статический проект без сборки. Запускай через любой локальный сервер (Live Server, `python3 -m http.server`, etc.) и открывай `index.html` в браузере. Для сброса состояния добавь `?reset=1` к URL `learn.html`.
-
-## Архитектура
-
-Telegram Mini App, три HTML-страницы с общим `styles.css` и модульным JS (`type="module"`):
-
-- `index.html` — лендинг, ведёт на `learn.html` и `description.html`
-- `learn.html` + `app.js` — основной сценарий: дисклеймер → форма → генерация жизней → монетизация
-- `description.html` — статичная страница с описанием концепции
-
-**Состояние** хранится в `localStorage` под ключом `chronoSoulArchiveStateV1` (объект: `disclaimerAccepted`, `profile`, `lives[]`, `shareUnlocked`, `paidLives`). Загружается в `loadState()` при старте.
-
-**Генерация жизней** (`data/generator.js`): детерминированная — `generateLife(profile, lifeNumber)` использует `hashText` от `birthDate|city|name|lifeNumber` как seed. Жизнь #1 всегда фиксируется в XX веке. Контент тянется из массивов-констант в `data/constants.js` через `pick(list, seed)`.
-
-**Монетизация (MVP/демо):**
-- Жизни #1–2: бесплатно
-- Жизнь #3: разблокируется кнопкой шэра (`state.shareUnlocked = true`)
-- Жизнь #4+: `state.paidLives += 1` (без реального платежа)
-
-`window.Telegram.WebApp` используется опционально — проект работает и без него.
+- После любых изменений — сразу коммит и пуш на `main`
+- Язык общения — русский
+- Все проекты статические (кроме chrono-soul-backend), сборки нет
+- Запуск: Live Server или `python3 -m http.server`, открывать нужный `index.html`
 
 ## Структура репозитория
 
+Все проекты — учебные, **заморожены**. Новая активная разработка в них не ведётся.
+
 ```
 projects/
-├── poproshaika/          — лендинг/монетизация (index.html, money.html, startup.html)
-├── chrono-soul-archive/  — фронтенд Telegram Mini App (ChronoSoul)
-├── chrono-soul-backend/  — backend Telegram Mini App
-└── dushi-gadov/          — веб-игра "ДУШИ ГАДОВ" (в разработке)
+├── chrono-soul-archive/  — [заморожен] Telegram Mini App "ChronoSoul" (фронтенд)
+├── chrono-soul-backend/  — [заморожен] backend для ChronoSoul (Node.js + Express + SQLite)
+├── dushi-gadov/          — [заморожен] веб-игра "ДУШИ ГАДОВ"
+├── poproshaika/          — [заморожен] лендинг с монетизацией
+├── afa-portfolio/        — [заморожен] портфолио "Штаб-квартира Иннотех — АФА"
+└── vagon/                — [заморожен] "Автоматический конвертор"
 ```
 
-## Production-требования (не реализовано в MVP)
-
-Согласно `REQUIREMENTS.md`, для production обязательны:
-- Backend-генерация с seed от `telegram_user_id` (не от полей формы)
-- БД: таблицы `users`, `life_results`, `entitlements`, `payments`
-- Версионирование алгоритма (`generator_version`) при изменении логики генерации
-- Верификация шэра и реальные платежи Telegram Stars через webhook
-
-## URLs проектов
+## URLs (GitHub Pages)
 
 - ДУШИ ГАДОВ: https://antioz.github.io/monney/projects/dushi-gadov/
 - Попрошайка: https://antioz.github.io/monney/projects/poproshaika/
+- Ваgон: https://antioz.github.io/monney/projects/vagon/
+
+---
+
+## chrono-soul-archive
+
+Telegram Mini App с генерацией «прошлых жизней» по профилю пользователя.
+
+**Запуск:** открыть `index.html`. Для сброса state — добавить `?reset=1` к URL `learn.html`.
+
+**Три страницы:**
+- `index.html` — лендинг
+- `learn.html` + `app.js` — основной сценарий: дисклеймер → форма → генерация жизней → монетизация
+- `description.html` — описание концепции
+
+**State** в `localStorage` под ключом `chronoSoulArchiveStateV1`:
+`disclaimerAccepted`, `profile`, `lives[]`, `shareUnlocked`, `paidLives`
+
+**Генерация жизней** (`data/generator.js`): детерминированная через `hashText(birthDate|city|name|lifeNumber)`. Жизнь #1 всегда в XX веке. Контент из констант (`data/constants.js`) через `pick(list, seed)`.
+
+**Монетизация (MVP/демо — платежи ненастоящие):**
+- #1–2: бесплатно
+- #3: через кнопку шэра (`state.shareUnlocked = true`)
+- #4+: `state.paidLives += 1`
+
+`window.Telegram.WebApp` используется опционально.
+
+---
+
+## chrono-soul-backend
+
+Backend для ChronoSoul. **Стек:** Node.js, Express 5, better-sqlite3, node-telegram-bot-api.
+
+**Запуск:** `node index.js` из папки `chrono-soul-backend/`.
+
+**Production-требования (не реализовано в MVP):**
+- Генерация жизней с seed от `telegram_user_id` (не от полей формы)
+- БД: таблицы `users`, `life_results`, `entitlements`, `payments`
+- Версионирование алгоритма (`generator_version`) при изменении логики
+- Верификация шэра и реальные платежи Telegram Stars через webhook
+
+---
+
+## dushi-gadov
+
+Веб-игра "ДУШИ ГАДОВ". **Заморожена.**
+
+**Структура:** `index.html` (лендинг), `game.html` (игра), `js/`, `assets/`, `styles.css`.
+
+---
+
+## poproshaika
+
+Лендинг с воронкой монетизации. Три страницы: `index.html`, `money.html`, `startup.html`.
+
+---
+
+## afa-portfolio
+
+Одностраничный портфолио-сайт "Штаб-квартира Иннотех — АФА". Файл: `project-12.html`.
+
+---
+
+## vagon
+
+"Автоматический конвертор". Файлы: `index.html`, `app.js`, `assets/`.
