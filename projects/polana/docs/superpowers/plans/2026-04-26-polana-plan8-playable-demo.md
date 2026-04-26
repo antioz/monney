@@ -228,15 +228,15 @@ GameManager.StartBattle()
 Выжившие враги: Громила (тир 2), Кипиш
 ```
 
-- [ ] **Task 1: Расширить ShowResult() в HudPanel**
+- [x] **Task 1: Расширить ShowResult() в HudPanel**
   - Принимает BattleResult с деталями (выжившие враги, урон)
   - Показывает читаемый текст
 
-- [ ] **Task 2: BattleResolver возвращает детали**
+- [x] **Task 2: BattleResolver возвращает детали**
   - `survivingEnemies: List<UnitData>` — кто выжил у врага
   - `damageDealt: int` — сколько HP снято
 
-- [ ] **Task 3: Commit**
+- [x] **Task 3: Commit**
   ```bash
   git add -A
   git commit -m "feat: battle result shows damage, surviving enemies"
@@ -247,10 +247,10 @@ GameManager.StartBattle()
 
 ## Plan 8F — Полировка (после всего выше)
 
-- [ ] Звук: удар, покупка, победа (AudioClip + AudioSource)
-- [ ] Переход между раундами плавный (fade или текст "РАУНД 4...")
-- [ ] Пустой магазин = кнопка РЕРОЛЛ подсвечена
-- [ ] Нельзя нажать БОЙ без юнитов — кнопка серая
+- [x] Звук: удар, покупка, победа (AudioClip + AudioSource)
+- [x] Переход между раундами плавный (fade или текст "РАУНД 4...")
+- [x] Пустой магазин = кнопка РЕРОЛЛ подсвечена
+- [x] Нельзя нажать БОЙ без юнитов — кнопка серая
 - [ ] Камера слегка качается в начале боя (cinemachine impulse)
 
 ---
