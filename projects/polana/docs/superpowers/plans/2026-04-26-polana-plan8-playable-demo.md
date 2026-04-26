@@ -120,16 +120,16 @@ GameManager.StartBattle()
 
 **Задачи:**
 
-- [ ] **Task 1: Расширить ShopSlot.cs**
+- [x] **Task 1: Расширить ShopSlot.cs**
   - Добавить поля: `factionLabel`, `tierLabel`, `costBadge`
   - `SetUnit(UnitData)` — устанавливает фон = faction color (тёмный), имя, фракцию, тир, цену
 
-- [ ] **Task 2: Пересобрать слоты в PolanaSceneBootstrap**
+- [x] **Task 2: Пересобрать слоты в PolanaSceneBootstrap**
   - Слоты теперь высотой 120px вместо текущего flex
   - Добавить TMP labels для фракции и тира
   - Шоп-панель: высота 160px
 
-- [ ] **Task 3: Commit**
+- [x] **Task 3: Commit**
   ```bash
   git add -A
   git commit -m "feat: shop slots show faction color, name, tier, cost badge"
