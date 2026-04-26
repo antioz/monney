@@ -236,8 +236,11 @@
 11. ✅ writing-plans → implementation plans написаны
     - Plan 1: Foundation (`2026-04-24-polana-foundation.md`) ✅ выполнен
     - Plans 2–5: выполнены (Core Loop, Factions, Bot, UI)
-    - Plan 6: Молодой & Хардкор (`2026-04-26-polana-plan6-molodoy-hardkor.md`) ✅ написан, ждёт выполнения
-    - Plan 7: 3D Visual Pass — ещё не написан
+    - Plan 6: Молодой & Хардкор (`2026-04-26-polana-plan6-molodoy-hardkor.md`) ✅ выполнен (2026-04-26)
+    - Plan 7: 3D Visual Pass (`2026-04-26-polana-plan7*.md`) ✅ написан, ждёт выполнения
+      - plan7a: Camera + Board Mesh (параллельно с 7b)
+      - plan7b: Unit Prefab + Flat Shader (параллельно с 7a)
+      - plan7c: UnitSpawner3D + GameManager Wiring (после 7a и 7b)
 
 ---
 
