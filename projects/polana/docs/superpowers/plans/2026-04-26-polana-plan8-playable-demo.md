@@ -192,14 +192,14 @@ GameManager.StartBattle()
 
 **Задачи:**
 
-- [ ] **Task 1: FactionPanel.cs**
+- [x] **Task 1: FactionPanel.cs**
   - Список строк FactionRow (icon + count dots + label)
   - `Refresh(BoardManager board)` — пересчитывает сколько юнитов каждой фракции
 
-- [ ] **Task 2: Добавить в сцену**
+- [x] **Task 2: Добавить в сцену**
   - Правая колонка, ширина 160px, поверх BoardArea
 
-- [ ] **Task 3: Commit**
+- [x] **Task 3: Commit**
   ```bash
   git add -A
   git commit -m "feat: faction panel shows active synergies on right side"
