@@ -102,10 +102,9 @@ Five archetypes. Each unit belongs to exactly one archetype.
 | Подписной спортик | Control + consistent damage | Reliable CC + quality damage output |
 | Отморозок | AoE damage, chaotic | AoE abilities, may hit allies |
 | Выездной | Support, buffer | Buffs allies; abilities work even under КС faction bonus |
-| Молодой | High-variance specialist | Special ability has X% chance to trigger at 3× effect, X% chance to completely fail. Applied only to the unit's special ability |
+| Молодой | High-variance specialist | Special ability rolls on each cast: 25% fail (0 effect), 50% normal (×1), 25% crit (×3). Applied only to the unit's special ability. EV = 1.25× vs same-tier stable unit |
 | Хардкор | Frontline anchor | High HP, moderate constant damage, aura buff for nearby allies. Expensive. Stable. |
 
-**Note:** Молодой variance percentages — TBD before implementation.  
 **Note:** Хардкор cost, aura radius, and aura values — TBD before implementation.
 
 ---
@@ -229,6 +228,6 @@ Low-poly characters, procedural physics, intentionally "wooden" animation. No ha
 | Question | Owner |
 |---|---|
 | Gang logos | User will provide |
-| Молодой ability: exact variance percentages | Design decision needed |
+| Молодой ability: variance percentages | ✅ 25% fail / 50% normal / 25% crit (×3) |
 | Хардкор: cost, aura radius, aura buff values | Design decision needed |
 | Visual style final sign-off (TABS low-poly confirmed?) | User |
