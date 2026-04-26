@@ -240,14 +240,14 @@
     - Plan 7: 3D Visual Pass (`2026-04-26-polana-plan7*.md`) ✅ выполнен (2026-04-26)
     - Plan 8: Playable Demo (`2026-04-26-polana-plan8-playable-demo.md`) ✅ выполнен (2026-04-26)
       - 8A–8F: все шаги выполнены (анимация боя, карточки, HP bars, фракции, итог, полировка)
-    - Plan 9: Visual Upgrade (`2026-05-xx-polana-plan9-visual-upgrade.md`) ⬜ следующий
-      - 9A: Окружение (skybox, текстура борда, освещение)
-      - 9B: Импорт 3D героев (Meshy.ai → Mixamo → Unity)
-      - 9C: Движение по клеткам в бою
-      - 9D: HP бары над головами (World Space)
-      - 9E: VFX атаки (particle burst)
-      - 9F: Звуки
-      - 9G: Карточки юнитов с портретами
+    - Plan 9: Visual Upgrade (`2026-05-xx-polana-plan9-visual-upgrade.md`) 🔄 в процессе
+      - 9A: ✅ Окружение (skybox, текстура борда, освещение) — (2026-04-26)
+      - 9B: ⬜ Импорт 3D героев (Meshy.ai → Mixamo → Unity)
+      - 9C: ⬜ Движение по клеткам в бою
+      - 9D: ✅ HP бары над головами (World Space) — уже было готово в prefab
+      - 9E: ✅ VFX атаки (particle burst) — PolanaVFXBootstrap + BattleAnimator (2026-04-26)
+      - 9F: ⬜ Звуки
+      - 9G: ⬜ Карточки юнитов с портретами
       - plan7a: Camera + Board Mesh ✅
       - plan7b: Unit Prefab + Flat Shader ✅
       - plan7c: UnitSpawner3D + GameManager Wiring ✅
