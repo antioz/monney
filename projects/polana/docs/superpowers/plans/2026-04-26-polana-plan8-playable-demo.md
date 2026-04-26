@@ -70,7 +70,7 @@ GameManager.StartBattle()
 
 **Задачи:**
 
-- [ ] **Task 1: BattleAnimator.cs**
+- [x] **Task 1: BattleAnimator.cs**
   - MonoBehaviour, запускается корутиной
   - `RunBattle(List<UnitView3D> players, List<UnitView3D> enemies, Action<bool> onDone)`
   - Каждые 0.8с — случайный живой юнит атакует случайного живого противника
@@ -78,11 +78,11 @@ GameManager.StartBattle()
   - Урон = простая формула (сила атаки юнита из UnitData)
   - Когда все с одной стороны dead → onDone(playerWon)
 
-- [ ] **Task 2: Wire в GameManager**
+- [x] **Task 2: Wire в GameManager**
   - Вместо `yield return new WaitForSeconds(1.5f)` — запускаем BattleAnimator
   - BattleAnimator работает с UnitView3D объектами (уже есть в UnitSpawner3D)
 
-- [ ] **Task 3: Commit**
+- [x] **Task 3: Commit**
   ```bash
   git add -A
   git commit -m "feat: battle animation — units move and attack, HP bars update live"
