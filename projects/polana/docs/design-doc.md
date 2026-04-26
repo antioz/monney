@@ -103,9 +103,8 @@ Five archetypes. Each unit belongs to exactly one archetype.
 | Отморозок | AoE damage, chaotic | AoE abilities, may hit allies |
 | Выездной | Support, buffer | Buffs allies; abilities work even under КС faction bonus |
 | Молодой | High-variance specialist | Special ability rolls on each cast: 25% fail (0 effect), 50% normal (×1), 25% crit (×3). Applied only to the unit's special ability. EV = 1.25× vs same-tier stable unit |
-| Хардкор | Frontline anchor | High HP, moderate constant damage, aura buff for nearby allies. Expensive. Stable. |
+| Хардкор | Frontline anchor | 4g. +60% HP vs base, ×0.8 damage vs base. Aura: +20% attack speed to all adjacent allies (1-cell radius). No ability variance — fully stable. Placement-dependent: value scales with number of neighbors |
 
-**Note:** Хардкор cost, aura radius, and aura values — TBD before implementation.
 
 ---
 
@@ -229,5 +228,5 @@ Low-poly characters, procedural physics, intentionally "wooden" animation. No ha
 |---|---|
 | Gang logos | User will provide |
 | Молодой ability: variance percentages | ✅ 25% fail / 50% normal / 25% crit (×3) |
-| Хардкор: cost, aura radius, aura buff values | Design decision needed |
+| Хардкор parameters | ✅ 4g, +60% HP, ×0.8 dmg, aura +20% AS radius 1 |
 | Visual style final sign-off (TABS low-poly confirmed?) | User |
