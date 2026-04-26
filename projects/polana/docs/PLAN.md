@@ -233,7 +233,11 @@
 8. ⬜ Количество юнитов в демо
 9. ⬜ Написать полный design doc
 10. ✅ Настроить Unity MCP (уже работает)
-11. ⬜ writing-plans → implementation plan для агентов
+11. ✅ writing-plans → implementation plans написаны
+    - Plan 1: Foundation (`2026-04-24-polana-foundation.md`) ✅ выполнен
+    - Plans 2–5: выполнены (Core Loop, Factions, Bot, UI)
+    - Plan 6: Молодой & Хардкор (`2026-04-26-polana-plan6-molodoy-hardkor.md`) ✅ написан, ждёт выполнения
+    - Plan 7: 3D Visual Pass — ещё не написан
 
 ---
 
