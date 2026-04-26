@@ -232,7 +232,7 @@
 7. ⬜ Визуальный стиль Unity (3D/2D, low-poly/реализм)
 8. ⬜ Количество юнитов в демо
 9. ⬜ Написать полный design doc
-10. ⬜ Настроить Unity MCP
+10. ✅ Настроить Unity MCP (уже работает)
 11. ⬜ writing-plans → implementation plan для агентов
 
 ---
