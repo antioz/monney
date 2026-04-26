@@ -181,8 +181,24 @@ damage = 2 + sum of tiers of all surviving enemy units
 
 ## 10. Visual Style
 
-**Reference:** Totally Accurate Battle Simulator (TABS)  
-Low-poly characters, procedural physics, intentionally "wooden" animation. No hand-crafted animations — ragdoll physics makes combat feel alive.
+**Direction:** Low-poly, realistic human proportions  
+**Tone:** Neutral-serious. Not comedic, not photorealistic. Readable indie aesthetic.
+
+**Character models:**
+- Normal human proportions (not cartoonishly exaggerated)
+- Low polygon count — faceted surfaces, no smooth normals
+- No textures in MVP — flat colors + minimal detail geometry
+- Replace placeholder meshes with final models later without touching game logic
+
+**Animation:**
+- Key pose animations for: idle, attack, stun, death
+- Ragdoll on death only (not active ragdoll during combat)
+- No motion capture required
+
+**Development approach:**
+- Start with primitive meshes (capsule body, sphere head) — mechanics first
+- Replace with low-poly meshes once gameplay is validated
+- Shader: Unity URP Lit with flat shading (no smoothing groups)
 
 **Unit differentiation via model details (all readable at grid card size):**
 
@@ -229,4 +245,4 @@ Low-poly characters, procedural physics, intentionally "wooden" animation. No ha
 | Gang logos | User will provide |
 | Молодой ability: variance percentages | ✅ 25% fail / 50% normal / 25% crit (×3) |
 | Хардкор parameters | ✅ 4g, +60% HP, ×0.8 dmg, aura +20% AS radius 1 |
-| Visual style final sign-off (TABS low-poly confirmed?) | User |
+| Visual style | ✅ Low-poly realistic proportions, flat shading, ragdoll on death only |
