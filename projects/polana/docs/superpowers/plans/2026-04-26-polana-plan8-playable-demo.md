@@ -156,15 +156,15 @@ GameManager.StartBattle()
 
 **Задачи:**
 
-- [ ] **Task 1: Добавить HP bar в BoardCell**
+- [x] **Task 1: Добавить HP bar в BoardCell**
   - Дочерний Image (filled horizontal) внизу клетки
   - BoardCell.SetUnit() и SetHp(int current, int max) обновляют его
 
-- [ ] **Task 2: Цвет клетки по фракции**
+- [x] **Task 2: Цвет клетки по фракции**
   - GameManager передаёт faction code при Refresh
   - BoardCell получает цвет = FactionColors[code] с alpha 0.7
 
-- [ ] **Task 3: Commit**
+- [x] **Task 3: Commit**
   ```bash
   git add -A
   git commit -m "feat: board cell shows HP bar + faction color per unit"
